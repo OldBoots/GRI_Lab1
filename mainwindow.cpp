@@ -7,6 +7,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     set_image("C:\\Qt\\Project\\Test-UI\\PERTSEV.bmp");
+    QImage img("C:\\Qt\\Project\\Test-UI\\PERTSEV.bmp");
+    QString str;
+    str = "Размер изображения: " + QString::number(img.width()) + "x"
+            + QString::number(img.height())
+            + "\nНаличие Альфа слоя: " + yes_no(img.hasAlphaChannel())
+            + "\nГлубина изображения: " + QString::number(img.depth())
+            + "\nФормат изображения: " + format_image(img.format());
+
+    ui->label_2->setText(str);
     connect(ui->pushButton, SIGNAL(clicked()), SLOT(slot()));
 }
 
@@ -21,6 +30,52 @@ void MainWindow::set_image(QString path)
                                               400,
                                               Qt::KeepAspectRatio,
                                               Qt::SmoothTransformation));
+}
+
+QString MainWindow::format_image(int format)
+{
+    switch(format){
+    case 0:
+        return "Invalid";
+    case 1:
+        return "Mono";
+    case 2:
+        return "MonoLSB";
+    case 3:
+        return "Indexed8";
+    case 4:
+        return "RGB32";
+    case 5:
+        return "ARGB32";
+    case 6:
+        return "ARGB32_Premultiplied";
+    case 7:
+        return "RGB16";
+    case 8:
+        return "ARGB8565_Premultiplied";
+    case 9:
+        return "RGB666";
+    case 10:
+        return "ARGB6666_Premultiplied";
+    case 11:
+        return "RGB555";
+    case 12:
+        return "ARGB8555_Premultiplied";
+    case 13:
+        return "RGB888";
+    case 14:
+        return "RGB444";
+    default:
+        return "Other";
+    }
+}
+
+QString MainWindow::yes_no(bool flg)
+{
+    if(flg){
+        return "Да";
+    }
+    return "Нет";
 }
 
 void MainWindow::slot()

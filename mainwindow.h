@@ -17,6 +17,8 @@ public:
     ~MainWindow();
 private:
     void set_image(QString str);
+    QString format_image(int format);
+    QString yes_no(bool flg);
 private:
     Ui::MainWindow *ui;
 private slots:
