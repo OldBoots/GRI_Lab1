@@ -19,8 +19,10 @@ private:
     void set_image(QString str);
     QString format_image(int format);
     QString yes_no(bool flg);
+    int sum_Byts(int begin, int end);
 private:
     Ui::MainWindow *ui;
+    QByteArray arr;
 private slots:
     void slot();
 };

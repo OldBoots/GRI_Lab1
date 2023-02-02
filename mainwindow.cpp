@@ -6,14 +6,32 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    set_image("C:\\Qt\\Project\\Test-UI\\PERTSEV.bmp");
+
+    // Считываем исходное изображение в массив Байт
+    QFile file("C:\\Qt\\Project\\Test-UI\\PERTSEV.bmp");
+    file.open(QIODevice::ReadOnly);
+    arr = file.readAll();
+    file.close();
+
+    int size_file = sum_Byts(2, 5);
+    int wight = sum_Byts(18, 21);
+    int height = sum_Byts(22, 25);
+    int depth = sum_Byts(28, 29);
+    int num_colors = sum_Byts(46, 49);
     QImage img("C:\\Qt\\Project\\Test-UI\\PERTSEV.bmp");
+    set_image("C:\\Qt\\Project\\Test-UI\\PERTSEV.bmp");
     QString str;
-    str = "Размер изображения: " + QString::number(img.width()) + "x"
-            + QString::number(img.height())
-            + "\nНаличие Альфа слоя: " + yes_no(img.hasAlphaChannel())
-            + "\nГлубина изображения: " + QString::number(img.depth())
-            + "\nФормат изображения: " + format_image(img.format());
+    str = "Размер файла: " + QString::number(size_file) + " Байт"
+            + "\nРазмер изображения: " + QString::number(wight) + "x"
+            + QString::number(height)
+            + "\nГлубина изображения: " + QString::number(depth) + " бит"
+            + "\nФормат изображения: " + format_image(img.format())
+            + "\nКол-во цветов в палитре: ";
+    if(num_colors == 0){
+        str += "Палитра отсутствует";
+    } else{
+        str += QString::number(num_colors);
+    }
 
     ui->label_2->setText(str);
     connect(ui->pushButton, SIGNAL(clicked()), SLOT(slot()));
@@ -78,13 +96,17 @@ QString MainWindow::yes_no(bool flg)
     return "Нет";
 }
 
+int MainWindow::sum_Byts(int begin, int end)
+{
+    int rez = 0;
+    for(int i = begin, shift = 0; i <= end; i++, shift += 8){
+        rez += QByteArray::fromRawData(&arr[i], 1).toHex().toInt(nullptr, 16) << shift;
+    }
+    return rez;
+}
+
 void MainWindow::slot()
 {
-    // Считываем исходное изображение в массив Байт
-    QFile file("C:\\Qt\\Project\\Test-UI\\PERTSEV.bmp");
-    file.open(QIODevice::ReadOnly);
-    QByteArray arr = file.readAll();
-    file.close();
     // Создаем файл для итогового изображения
     QFile file1("C:\\Qt\\Project\\Test-UI\\PERTSEV1.bmp");
     file1.open(QIODevice::WriteOnly);
@@ -92,7 +114,9 @@ void MainWindow::slot()
     // считываем ARGB цвета, находим самы тусклый оттенок
     // и приравниваем к нему остальные
     char min_color;
-    for(int i = 138; i < arr.size(); i+=4){
+
+    int pint_arr = sum_Byts(10, 13);
+    for(int i = pint_arr; i < arr.size(); i+=4){
         min_color = arr[i];
         for(int j = 1; j < 3; j++){
             if(arr[i+j] < min_color){
